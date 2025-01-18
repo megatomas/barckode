@@ -3,85 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Форма ввода данных</title>
+    <title>Форма для генерации штрих-кодов</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        .form-group {
-            margin-bottom: 15px;
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
         }
         label {
-            display: block;
+            font-size: 14px;
             margin-bottom: 5px;
+            display: block;
         }
-        input[type="text"], input[type="number"], textarea {
+        input, textarea {
             width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
         }
         button {
-            padding: 10px 15px;
-            background-color: #007bff;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
             color: white;
             border: none;
+            border-radius: 4px;
+            font-size: 16px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <h1>Форма ввода данных</h1>
-    <form id="data-form">
-        <div class="form-group">
-            <label for="name">Название товара:</label>
-            <input type="text" id="name" name="name" required>
-        </div>
-        <div class="form-group">
-            <label for="barcode">Баркод (12 цифр):</label>
-            <input type="text" id="barcode" name="barcode" pattern="\d{12}" required>
-        </div>
-        <div class="form-group">
-            <label for="seller_article">Артикул продавца (опционально):</label>
-            <input type="text" id="seller_article" name="seller_article">
-        </div>
-        <div class="form-group">
-            <label for="production_place">Произведено в (опционально):</label>
-            <input type="text" id="production_place" name="production_place">
-        </div>
-        <div class="form-group">
+    <div class="form-container">
+        <h1>Введите данные товара</h1>
+        <form id="dataForm">
+            <label for="barcode">Баркод:</label>
+            <input type="text" id="barcode" name="barcode" required>
+
+            <label for="productName">Название товара:</label>
+            <input type="text" id="productName" name="productName" required>
+
+            <label for="article">Артикул:</label>
+            <input type="text" id="article" name="article" required>
+
+            <label for="sellerArticle">Артикул продавца:</label>
+            <input type="text" id="sellerArticle" name="sellerArticle">
+
+            <label for="madeIn">Произведено в:</label>
+            <input type="text" id="madeIn" name="madeIn">
+
             <label for="seller">Продавец:</label>
             <input type="text" id="seller" name="seller" required>
-        </div>
-        <div class="form-group">
-            <label for="comment">Комментарий (опционально):</label>
+
+            <label for="comment">Комментарий:</label>
             <textarea id="comment" name="comment" rows="4"></textarea>
-        </div>
-        <button type="submit">Отправить</button>
-    </form>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+            <button type="button" onclick="sendData()">Отправить</button>
+        </form>
+    </div>
+
     <script>
-        const form = document.getElementById('data-form');
-        const tg = window.Telegram.WebApp;
+        function sendData() {
+            const data = {
+                'Баркод': document.getElementById('barcode').value,
+                'Название товара': document.getElementById('productName').value,
+                'Артикул': document.getElementById('article').value,
+                'Артикул продавца': document.getElementById('sellerArticle').value,
+                'Произведено в': document.getElementById('madeIn').value,
+                'Продавец': document.getElementById('seller').value,
+                'Комментарий': document.getElementById('comment').value
+            };
 
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            tg.MainButton.setText('Отправить данные').show();
-            tg.MainButton.onClick(() => {
-                tg.sendData(JSON.stringify(data));
-            });
-        });
+            // Отправка данных в Telegram Web App
+            if (window.Telegram.WebApp) {
+                Telegram.WebApp.sendData(JSON.stringify(data));
+            } else {
+                alert('Ошибка: Telegram Web App не поддерживается.');
+            }
+        }
     </script>
 </body>
 </html>
