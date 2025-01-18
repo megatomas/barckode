@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма ввода данных</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Форма ввода данных</h1>
+    <form id="data-form">
+        <div class="form-group">
+            <label for="name">Название товара:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="article">Артикул:</label>
+            <input type="text" id="article" name="article" required>
+        </div>
+        <div class="form-group">
+            <label for="seller_article">Артикул продавца (опционально):</label>
+            <input type="text" id="seller_article" name="seller_article">
+        </div>
+        <div class="form-group">
+            <label for="production_place">Произведено в (опционально):</label>
+            <input type="text" id="production_place" name="production_place">
+        </div>
+        <div class="form-group">
+            <label for="seller">Продавец:</label>
+            <input type="text" id="seller" name="seller" required>
+        </div>
+        <div class="form-group">
+            <label for="comment">Комментарий (опционально):</label>
+            <textarea id="comment" name="comment" rows="4"></textarea>
+        </div>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const form = document.getElementById('data-form');
+        const tg = window.Telegram.WebApp;
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            tg.MainButton.setText('Отправить данные').show();
+            tg.MainButton.onClick(() => {
+                tg.sendData(JSON.stringify(data));
+            });
+        });
+    </script>
+</body>
+</html>
