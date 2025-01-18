@@ -1,9 +1,6 @@
-
+<!DOCTYPE html>
 <html>
 <head>
-     <meta charset="UTF-8">
-       <!DOCTYPE html>
-
     <title>Создание баркода</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -12,6 +9,8 @@
             font-family: Arial, sans-serif;
             padding: 20px;
             background-color: #f0f2f5;
+            color: var(--tg-theme-text-color, #000000);
+            background: var(--tg-theme-bg-color, #ffffff);
         }
         .form-group {
             margin-bottom: 15px;
@@ -27,10 +26,12 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
         }
         button {
-            background-color: #0088cc;
-            color: white;
+            background-color: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
             padding: 10px 20px;
             border: none;
             border-radius: 4px;
@@ -38,62 +39,117 @@
             width: 100%;
         }
         button:hover {
-            background-color: #006699;
+            opacity: 0.8;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+            display: none;
         }
     </style>
 </head>
 <body>
     <form id="barcodeForm">
         <div class="form-group">
-            <label for="barcode">Баркод*:</label>
-            <input type="text" id="barcode" required>
+            <label for="barcode">Баркод!!!*:</label>
+            <input type="text" id="barcode" name="barcode" required>
+            <div class="error" id="barcodeError">Это поле обязательно</div>
         </div>
         <div class="form-group">
             <label for="product_name">Название товара*:</label>
-            <input type="text" id="product_name" required>
+            <input type="text" id="product_name" name="product_name" required>
+            <div class="error" id="productNameError">Это поле обязательно</div>
         </div>
         <div class="form-group">
             <label for="article">Артикул*:</label>
-            <input type="text" id="article" required>
+            <input type="text" id="article" name="article" required>
+            <div class="error" id="articleError">Это поле обязательно</div>
         </div>
         <div class="form-group">
             <label for="seller_article">Артикул продавца:</label>
-            <input type="text" id="seller_article">
+            <input type="text" id="seller_article" name="seller_article">
         </div>
         <div class="form-group">
             <label for="made_in">Произведено в:</label>
-            <input type="text" id="made_in">
+            <input type="text" id="made_in" name="made_in">
         </div>
         <div class="form-group">
             <label for="seller">Продавец*:</label>
-            <input type="text" id="seller" required>
+            <input type="text" id="seller" name="seller" required>
+            <div class="error" id="sellerError">Это поле обязательно</div>
         </div>
         <div class="form-group">
             <label for="comment">Комментарий:</label>
-            <textarea id="comment" rows="3"></textarea>
+            <textarea id="comment" name="comment" rows="3"></textarea>
         </div>
-        <button type="submit">Создать баркод</button>
+        <button type="submit" id="submitButton">Создать баркод</button>
     </form>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Активируем кнопку MainButton
+        tg.MainButton.text = "Создать баркод";
+        tg.MainButton.enable();
+        tg.MainButton.show();
+
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = ['barcode', 'product_name', 'article', 'seller'];
+
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                const errorElement = document.getElementById(field + 'Error');
+                if (!element.value.trim()) {
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                } else {
+                    errorElement.style.display = 'none';
+                }
+            });
+
+            return isValid;
+        }
+
+        function collectFormData() {
+            return {
+                barcode: document.getElementById('barcode').value.trim(),
+                product_name: document.getElementById('product_name').value.trim(),
+                article: document.getElementById('article').value.trim(),
+                seller_article: document.getElementById('seller_article').value.trim(),
+                made_in: document.getElementById('made_in').value.trim(),
+                seller: document.getElementById('seller').value.trim(),
+                comment: document.getElementById('comment').value.trim()
+            };
+        }
+
         document.getElementById('barcodeForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            if (validateForm()) {
+                const formData = collectFormData();
+                tg.sendData(JSON.stringify(formData));
+            }
+        });
 
-            const formData = {
-                barcode: document.getElementById('barcode').value,
-                product_name: document.getElementById('product_name').value,
-                article: document.getElementById('article').value,
-                seller_article: document.getElementById('seller_article').value,
-                made_in: document.getElementById('made_in').value,
-                seller: document.getElementById('seller').value,
-                comment: document.getElementById('comment').value
-            };
+        // Обработка изменений в форме
+        const formInputs = document.querySelectorAll('input, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (validateForm()) {
+                    tg.MainButton.enable();
+                } else {
+                    tg.MainButton.disable();
+                }
+            });
+        });
 
-            tg.sendData(JSON.stringify(formData));
-            tg.close();
+        // Обработка нажатия главной кнопки
+        tg.MainButton.onClick(function() {
+            if (validateForm()) {
+                const formData = collectFormData();
+                tg.sendData(JSON.stringify(formData));
+            }
         });
     </script>
 </body>
