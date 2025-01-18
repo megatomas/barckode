@@ -1,111 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<html>
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
+       <!DOCTYPE html>
+
+    <title>Создание баркода</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Форма для генерации штрих-кодов</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #f0f2f5;
         }
-        .form-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        h1 {
-            font-size: 20px;
-            text-align: center;
-            margin-bottom: 20px;
+        .form-group {
+            margin-bottom: 15px;
         }
         label {
-            font-size: 14px;
-            margin-bottom: 5px;
             display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        input, textarea {
+        input[type="text"], textarea {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+            padding: 8px;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            box-sizing: border-box;
         }
         button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
+            background-color: #0088cc;
             color: white;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
-            font-size: 16px;
             cursor: pointer;
+            width: 100%;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #006699;
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Введите данные товара</h1>
-        <form id="dataForm">
-            <label for="barcode">Баркод:</label>
-            <input type="text" id="barcode" name="barcode" required>
-
-            <label for="productName">Название товара:</label>
-            <input type="text" id="productName" name="productName" required>
-
-            <label for="article">Артикул:</label>
-            <input type="text" id="article" name="article" required>
-
-            <label for="sellerArticle">Артикул продавца:</label>
-            <input type="text" id="sellerArticle" name="sellerArticle">
-
-            <label for="madeIn">Произведено в:</label>
-            <input type="text" id="madeIn" name="madeIn">
-
-            <label for="seller">Продавец:</label>
-            <input type="text" id="seller" name="seller" required>
-
+    <form id="barcodeForm">
+        <div class="form-group">
+            <label for="barcode">Баркод*:</label>
+            <input type="text" id="barcode" required>
+        </div>
+        <div class="form-group">
+            <label for="product_name">Название товара*:</label>
+            <input type="text" id="product_name" required>
+        </div>
+        <div class="form-group">
+            <label for="article">Артикул*:</label>
+            <input type="text" id="article" required>
+        </div>
+        <div class="form-group">
+            <label for="seller_article">Артикул продавца:</label>
+            <input type="text" id="seller_article">
+        </div>
+        <div class="form-group">
+            <label for="made_in">Произведено в:</label>
+            <input type="text" id="made_in">
+        </div>
+        <div class="form-group">
+            <label for="seller">Продавец*:</label>
+            <input type="text" id="seller" required>
+        </div>
+        <div class="form-group">
             <label for="comment">Комментарий:</label>
-            <textarea id="comment" name="comment" rows="4"></textarea>
-
-            <button type="button" onclick="sendData()">Отправить</button>
-        </form>
-    </div>
+            <textarea id="comment" rows="3"></textarea>
+        </div>
+        <button type="submit">Создать баркод</button>
+    </form>
 
     <script>
         let tg = window.Telegram.WebApp;
+        tg.expand();
 
-        function sendData() {
-            const data = {
-                'Баркод': document.getElementById('barcode').value,
-                'Название товара': document.getElementById('productName').value,
-                'Артикул': document.getElementById('article').value,
-                'Артикул продавца': document.getElementById('sellerArticle').value,
-                'Произведено в': document.getElementById('madeIn').value,
-                'Продавец': document.getElementById('seller').value,
-                'Комментарий': document.getElementById('comment').value
+        document.getElementById('barcodeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                barcode: document.getElementById('barcode').value,
+                product_name: document.getElementById('product_name').value,
+                article: document.getElementById('article').value,
+                seller_article: document.getElementById('seller_article').value,
+                made_in: document.getElementById('made_in').value,
+                seller: document.getElementById('seller').value,
+                comment: document.getElementById('comment').value
             };
 
-            // Отправка данных в Telegram Web App
-            if (tg) {
-                tg.sendData(JSON.stringify(data));
-            } else {
-                alert('Ошибка: Telegram Web App не поддерживается.');
-            }
-        }
+            tg.sendData(JSON.stringify(formData));
+            tg.close();
+        });
     </script>
 </body>
 </html>
