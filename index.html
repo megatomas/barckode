@@ -60,7 +60,7 @@
     <div class="form-container">
         <h1>Введите данные товара</h1>
         <form id="dataForm">
-            <label for="barcode">Баркод!:</label>
+            <label for="barcode">Баркод:</label>
             <input type="text" id="barcode" name="barcode" required>
 
             <label for="productName">Название товара:</label>
@@ -86,6 +86,8 @@
     </div>
 
     <script>
+        let tg = window.Telegram.WebApp;
+
         function sendData() {
             const data = {
                 'Баркод': document.getElementById('barcode').value,
@@ -98,8 +100,8 @@
             };
 
             // Отправка данных в Telegram Web App
-            if (window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(JSON.stringify(data));
+            if (tg) {
+                tg.sendData(JSON.stringify(data));
             } else {
                 alert('Ошибка: Telegram Web App не поддерживается.');
             }
